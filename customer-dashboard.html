@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Stackly — Customer Dashboard</title>
+<link rel="stylesheet" href="style.css"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>"/>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="loader-logo">Stack<span>ly</span></div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<canvas id="particles-canvas" style="opacity:0.15"></canvas>
+
+<div class="dashboard-page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🍽️</div>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">Stack<span>ly</span></span>
+        <span class="sidebar-brand-role">Customer Portal</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Main Menu</div>
+      <div class="sidebar-link active" data-section="home">
+        <span class="sidebar-icon">🏠</span>
+        <span class="sidebar-label">Home</span>
+      </div>
+      <div class="sidebar-link" data-section="menu">
+        <span class="sidebar-icon">🍴</span>
+        <span class="sidebar-label">Menu</span>
+      </div>
+      <div class="sidebar-link" data-section="cart">
+        <span class="sidebar-icon">🛒</span>
+        <span class="sidebar-label">Cart</span>
+        <span class="sidebar-badge cart-badge" style="display:none">0</span>
+      </div>
+
+      <div class="sidebar-section-label">My Account</div>
+      <div class="sidebar-link" data-section="orders">
+        <span class="sidebar-icon">📦</span>
+        <span class="sidebar-label">My Orders</span>
+      </div>
+      <div class="sidebar-link" data-section="reservations">
+        <span class="sidebar-icon">📅</span>
+        <span class="sidebar-label">Reservations</span>
+      </div>
+      <div class="sidebar-link" data-section="profile">
+        <span class="sidebar-icon">👤</span>
+        <span class="sidebar-label">Profile</span>
+      </div>
+      <div class="sidebar-link" data-section="settings">
+        <span class="sidebar-icon">⚙️</span>
+        <span class="sidebar-label">Settings</span>
+      </div>
+
+      <div class="sidebar-section-label">Other</div>
+      <div class="sidebar-link" data-section="logout">
+        <span class="sidebar-icon">🚪</span>
+        <span class="sidebar-label">Logout</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">
+          <span class="user-initial">G</span>
+        </div>
+        <div>
+          <div class="sidebar-user-name user-name-display">Guest</div>
+          <div class="sidebar-user-role user-email-display">customer</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="topbar-title font-display">Home</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <span class="topbar-search-icon">🔍</span>
+        <input type="text" placeholder="Search menu…" id="topbar-search-input" oninput="showSection('menu');document.getElementById('menu-search').value=this.value;document.getElementById('menu-search').dispatchEvent(new Event('input'))"/>
+      </div>
+      <div class="topbar-icon-btn" onclick="showSection('cart')" title="Cart">
+        🛒
+        <span class="dot cart-badge" style="display:none;top:4px;right:4px;width:10px;height:10px;font-size:0;padding:0"></span>
+      </div>
+      <div class="topbar-icon-btn" onclick="go404()" title="Notifications">🔔<span class="dot"></span></div>
+      <div class="topbar-icon-btn" onclick="showSection('profile')" title="Profile" style="font-size:1.4rem">👤</div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="main-inner">
+
+      <!-- ── HOME ── -->
+      <div id="section-home" class="section active" data-title="Home">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">Welcome Back, <span class="gradient-text user-name-display">Guest</span> 👋</h2>
+            <p class="section-subtitle">Fresh Flavors. Fast Service. Memorable Dining.</p>
+          </div>
+          <button class="btn btn-primary" onclick="showSection('menu')">Browse Menu 🍴</button>
+        </div>
+
+        <!-- Quick stats -->
+        <div class="stats-grid reveal">
+          <div class="stat-card">
+            <div class="stat-icon amber">📦</div>
+            <div class="stat-info">
+              <div class="stat-val" id="home-order-count">3</div>
+              <div class="stat-lbl">Total Orders</div>
+              <div class="stat-change up">↑ This Month</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">🛒</div>
+            <div class="stat-info">
+              <div class="stat-val" id="home-cart-count">0</div>
+              <div class="stat-lbl">Cart Items</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blue">📅</div>
+            <div class="stat-info">
+              <div class="stat-val">2</div>
+              <div class="stat-lbl">Reservations</div>
+              <div class="stat-change up">1 Upcoming</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber">⭐</div>
+            <div class="stat-info">
+              <div class="stat-val">4.9</div>
+              <div class="stat-lbl">Your Rating</div>
+              <div class="stat-change up">Loyal Customer</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured -->
+        <div class="reveal" style="margin-bottom:24px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <h3 class="font-display" style="font-size:1.3rem">⭐ Today's Specials</h3>
+            <button class="btn btn-ghost btn-sm" onclick="showSection('menu')">View All →</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
+            <div class="card" style="cursor:pointer" onclick="showSection('menu')">
+              <div style="font-size:3rem;margin-bottom:10px">🍚</div>
+              <div style="font-weight:700;margin-bottom:4px">Truffle Risotto</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px">Chef's Signature Dish</div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Playfair Display',serif;color:var(--accent);font-size:1.1rem;font-weight:700">₹2,074</span>
+                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();addToCart(1)">+ Add</button>
+              </div>
+            </div>
+            <div class="card" style="cursor:pointer" onclick="showSection('menu')">
+              <div style="font-size:3rem;margin-bottom:10px">🐟</div>
+              <div style="font-weight:700;margin-bottom:4px">Grilled Salmon</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px">Fresh Atlantic Catch</div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Playfair Display',serif;color:var(--accent);font-size:1.1rem;font-weight:700">₹2,406</span>
+                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();addToCart(2)">+ Add</button>
+              </div>
+            </div>
+            <div class="card" style="cursor:pointer" onclick="showSection('menu')">
+              <div style="font-size:3rem;margin-bottom:10px">🍕</div>
+              <div style="font-weight:700;margin-bottom:4px">Margherita Pizza</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px">Classic Italian</div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Playfair Display',serif;color:var(--accent);font-size:1.1rem;font-weight:700">₹1,576</span>
+                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();addToCart(3)">+ Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="reveal">
+          <h3 class="font-display" style="font-size:1.3rem;margin-bottom:16px">Quick Actions</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+            <button class="btn btn-ghost" style="padding:20px;flex-direction:column;gap:8px;height:auto" onclick="showSection('menu')"><span style="font-size:1.8rem">🍴</span>Browse Menu</button>
+            <button class="btn btn-ghost" style="padding:20px;flex-direction:column;gap:8px;height:auto" onclick="showSection('reservations')"><span style="font-size:1.8rem">📅</span>Make Reservation</button>
+            <button class="btn btn-ghost" style="padding:20px;flex-direction:column;gap:8px;height:auto" onclick="showSection('orders')"><span style="font-size:1.8rem">📦</span>Track Order</button>
+            <button class="btn btn-ghost" style="padding:20px;flex-direction:column;gap:8px;height:auto" onclick="showSection('profile')"><span style="font-size:1.8rem">👤</span>My Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MENU ── -->
+      <div id="section-menu" class="section" data-title="Menu">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">Our Menu</h2>
+            <p class="section-subtitle">Explore our carefully crafted dishes</p>
+          </div>
+        </div>
+        <div class="filter-row reveal">
+          <div class="input-wrapper" style="flex:1;max-width:340px">
+            <span class="input-icon">🔍</span>
+            <input type="text" class="form-control" id="menu-search" placeholder="Search dishes…"/>
+          </div>
+        </div>
+        <div class="menu-cats reveal">
+          <button class="cat-btn active" data-cat="all">🍽️ All Items</button>
+          <button class="cat-btn" data-cat="starters">🥗 Starters</button>
+          <button class="cat-btn" data-cat="mains">🍖 Mains</button>
+          <button class="cat-btn" data-cat="desserts">🍰 Desserts</button>
+          <button class="cat-btn" data-cat="drinks">🥤 Drinks</button>
+        </div>
+        <div id="menu-grid" class="menu-grid"></div>
+      </div>
+
+      <!-- ── CART ── -->
+      <div id="section-cart" class="section" data-title="My Cart">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">My Cart 🛒</h2>
+            <p class="section-subtitle">Review your items before ordering</p>
+          </div>
+          <button class="btn btn-ghost" onclick="showSection('menu')">+ Add More</button>
+        </div>
+        <div class="cart-wrap reveal">
+          <div id="cart-items-list" class="cart-items"></div>
+          <div id="cart-summary-box" class="cart-summary" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- ── ORDERS ── -->
+      <div id="section-orders" class="section" data-title="My Orders">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">My Orders 📦</h2>
+            <p class="section-subtitle">Track your order history</p>
+          </div>
+          <button class="btn btn-primary" onclick="showSection('menu')">Order Again</button>
+        </div>
+        <div class="card reveal" style="padding:0">
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="orders-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RESERVATIONS ── -->
+      <div id="section-reservations" class="section" data-title="Reservations">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">Reservations 📅</h2>
+            <p class="section-subtitle">Book a table and manage your bookings</p>
+          </div>
+        </div>
+
+        <!-- Book form -->
+        <div class="card reservation-form-card reveal" style="margin-bottom:24px">
+          <h3 class="font-display" style="margin-bottom:20px;font-size:1.2rem">➕ New Reservation</h3>
+          <form id="reservation-form" novalidate>
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Date *</label>
+                <input type="date" class="form-control" id="res-date" min="2025-01-01"/>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Time *</label>
+                <select class="form-control" id="res-time">
+                  <option value="">Select time</option>
+                  <option>12:00 PM</option><option>12:30 PM</option>
+                  <option>1:00 PM</option><option>1:30 PM</option>
+                  <option>6:00 PM</option><option>6:30 PM</option>
+                  <option>7:00 PM</option><option>7:30 PM</option>
+                  <option>8:00 PM</option><option>8:30 PM</option>
+                  <option>9:00 PM</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:14px">
+              <label class="form-label">Number of Guests *</label>
+              <select class="form-control" id="res-guests">
+                <option value="">Select guests</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Special Requests</label>
+              <textarea class="form-control" id="res-notes" rows="3" placeholder="Dietary requirements, occasion, seating preferences…"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Book Table 📅</button>
+          </form>
+        </div>
+
+        <!-- Existing reservations -->
+        <div class="card reveal" style="padding:0">
+          <div style="padding:20px 20px 0;border-bottom:1px solid var(--border);margin-bottom:0">
+            <h3 class="font-display" style="font-size:1.1rem;padding-bottom:16px">My Reservations</h3>
+          </div>
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr><th>ID</th><th>Date</th><th>Time</th><th>Guests</th><th>Status</th><th>Action</th></tr>
+              </thead>
+              <tbody id="reservations-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROFILE ── -->
+      <div id="section-profile" class="section" data-title="Profile">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">My Profile 👤</h2>
+            <p class="section-subtitle">Manage your account information</p>
+          </div>
+        </div>
+
+        <div class="profile-header reveal">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar" id="profile-avatar-el">
+              <span id="profile-initial">G</span>
+              <img id="profile-img" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
+            </div>
+            <div class="profile-avatar-edit" title="Change Photo">✏️</div>
+            <input type="file" id="profile-photo-input" accept="image/*" style="display:none"/>
+          </div>
+          <div>
+            <div class="profile-name user-name-display font-display" id="profile-name">Guest</div>
+            <div class="profile-email user-email-display" id="profile-email"></div>
+            <span class="badge badge-success" style="margin-top:8px">✓ Verified Customer</span>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <h3 class="font-display" style="font-size:1.1rem;margin-bottom:20px">Edit Profile</h3>
+          <form id="profile-form">
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Full Name</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">👤</span>
+                  <input type="text" class="form-control" id="edit-name" placeholder="Your full name"/>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Email Address</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">✉️</span>
+                  <input type="email" class="form-control" id="edit-email" placeholder="you@example.com"/>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:14px">
+              <label class="form-label">Mobile Number</label>
+              <div class="input-wrapper">
+                <span class="input-icon">📱</span>
+                <input type="tel" class="form-control" id="edit-mobile" placeholder="+91 9XXXXXXXXX"/>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Profile ✓</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div id="section-settings" class="section" data-title="Settings">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">Settings ⚙️</h2>
+            <p class="section-subtitle">Customize your Stackly experience</p>
+          </div>
+        </div>
+        <div class="settings-grid reveal">
+          <!-- Appearance -->
+          <div class="card settings-card">
+            <h3>🎨 Appearance</h3>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Light Theme</div>
+                <div class="settings-row-sub">Toggle between dark and light mode</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" data-theme-toggle/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="card settings-card">
+            <h3>🔔 Notifications</h3>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Order Updates</div>
+                <div class="settings-row-sub">Get notified about order status</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Reservation Reminders</div>
+                <div class="settings-row-sub">Alerts before your reservations</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Promotional Offers</div>
+                <div class="settings-row-sub">Special deals and discounts</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox"/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <button class="btn btn-primary btn-sm" style="margin-top:14px" id="save-notifications-btn">Save Preferences</button>
+          </div>
+
+          <!-- Change Password -->
+          <div class="card settings-card" style="grid-column:1/-1">
+            <h3>🔑 Change Password</h3>
+            <form id="change-password-form" style="max-width:480px">
+              <div class="form-group">
+                <label class="form-label">Current Password</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">🔒</span>
+                  <input type="password" class="form-control" id="current-password" placeholder="Enter current password"/>
+                  <span class="input-toggle">👁️</span>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">New Password</label>
+                  <div class="input-wrapper">
+                    <span class="input-icon">🔐</span>
+                    <input type="password" class="form-control" id="new-password" placeholder="Min. 6 characters"/>
+                    <span class="input-toggle">👁️</span>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Confirm New Password</label>
+                  <div class="input-wrapper">
+                    <span class="input-icon">🔐</span>
+                    <input type="password" class="form-control" id="confirm-new-password" placeholder="Re-enter new password"/>
+                    <span class="input-toggle">👁️</span>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary" style="margin-top:16px">Update Password 🔑</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-inner -->
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>Stack<span>ly</span></h3>
+          <p>Premium restaurant management system built for modern dining experiences. Fresh flavors, fast service, memorable dining.</p>
+          <div class="social-links">
+            <div class="social-link" onclick="go404()" title="Instagram">📸</div>
+            <div class="social-link" onclick="go404()" title="Facebook">👥</div>
+            <div class="social-link" onclick="go404()" title="X / Twitter">🐦</div>
+            <div class="social-link" onclick="go404()" title="LinkedIn">💼</div>
+            <div class="social-link" onclick="go404()" title="YouTube">▶️</div>
+            <div class="social-link" onclick="go404()" title="WhatsApp">💬</div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a onclick="go404()">About Us</a>
+          <a onclick="go404()">Careers</a>
+          <a onclick="go404()">Blog</a>
+          <a onclick="go404()">Press</a>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <a onclick="go404()">Help Centre</a>
+          <a onclick="go404()">Contact Us</a>
+          <a onclick="go404()">Status</a>
+          <a onclick="go404()">Feedback</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a onclick="go404()">Privacy Policy</a>
+          <a onclick="go404()">Terms of Service</a>
+          <a onclick="go404()">Cookie Policy</a>
+          <a onclick="go404()">Disclaimer</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Stackly Restaurant. All rights reserved.</p>
+        <p>Made with ❤️ for food lovers</p>
+      </div>
+    </footer>
+
+  </main><!-- /main-content -->
+</div><!-- /dashboard-page -->
+
+<div id="toast-container"></div>
+<script src="script.js"></script>
+<script>
+// Init password toggles in settings after DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(initPasswordToggles, 500);
+});
+</script>
+</body>
+</html>

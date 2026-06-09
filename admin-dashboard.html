@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Stackly — Admin Dashboard</title>
+<link rel="stylesheet" href="style.css"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>"/>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="loader-logo">Stack<span>ly</span></div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<canvas id="particles-canvas" style="opacity:0.1"></canvas>
+
+<div class="dashboard-page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🍽️</div>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">Stack<span>ly</span></span>
+        <span class="sidebar-brand-role">Admin Panel</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Overview</div>
+      <div class="sidebar-link active" data-section="dashboard">
+        <span class="sidebar-icon">📊</span>
+        <span class="sidebar-label">Dashboard</span>
+      </div>
+
+      <div class="sidebar-section-label">Operations</div>
+      <div class="sidebar-link" data-section="orders">
+        <span class="sidebar-icon">🧾</span>
+        <span class="sidebar-label">Orders</span>
+        <span class="sidebar-badge" style="background:var(--error);color:#fff">5</span>
+      </div>
+      <div class="sidebar-link" data-section="reservations">
+        <span class="sidebar-icon">📅</span>
+        <span class="sidebar-label">Reservations</span>
+      </div>
+      <div class="sidebar-link" data-section="menu-management">
+        <span class="sidebar-icon">🍴</span>
+        <span class="sidebar-label">Menu Management</span>
+      </div>
+
+      <div class="sidebar-section-label">Business</div>
+      <div class="sidebar-link" data-section="customers">
+        <span class="sidebar-icon">👥</span>
+        <span class="sidebar-label">Customers</span>
+      </div>
+      <div class="sidebar-link" data-section="inventory">
+        <span class="sidebar-icon">📦</span>
+        <span class="sidebar-label">Inventory</span>
+      </div>
+      <div class="sidebar-link" data-section="reports">
+        <span class="sidebar-icon">📈</span>
+        <span class="sidebar-label">Reports</span>
+      </div>
+
+      <div class="sidebar-section-label">Account</div>
+      <div class="sidebar-link" data-section="profile">
+        <span class="sidebar-icon">👤</span>
+        <span class="sidebar-label">Profile</span>
+      </div>
+      <div class="sidebar-link" data-section="settings">
+        <span class="sidebar-icon">⚙️</span>
+        <span class="sidebar-label">Settings</span>
+      </div>
+      <div class="sidebar-link" data-section="logout">
+        <span class="sidebar-icon">🚪</span>
+        <span class="sidebar-label">Logout</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">
+          <img id="profile-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
+          <span class="user-initial">A</span>
+        </div>
+        <div>
+          <div class="sidebar-user-name user-name-display">Admin</div>
+          <div class="sidebar-user-role user-email-display">admin@stackly.com</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="topbar-title font-display" id="topbar-title">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <span class="topbar-search-icon">🔍</span>
+        <input type="text" placeholder="Search…" id="topbar-search-input"/>
+      </div>
+      <div class="topbar-icon-btn" onclick="go404()" title="Notifications">🔔<span class="dot"></span></div>
+      <div class="topbar-icon-btn" onclick="showSection('profile')" title="Profile" style="font-size:1.4rem">👤</div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="main-inner">
+
+      <!-- ══════════════════════════════════
+           DASHBOARD (Overview)
+      ══════════════════════════════════ -->
+      <div id="section-dashboard" class="section active" data-title="Dashboard">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">Good Morning, <span class="gradient-text user-name-display">Admin</span> 👨‍🍳</h2>
+            <p class="section-subtitle">Here's what's happening in your restaurant today.</p>
+          </div>
+          <button class="btn btn-primary" onclick="showSection('reports')">View Reports 📈</button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="stats-grid reveal">
+          <div class="stat-card">
+            <div class="stat-icon amber">💰</div>
+            <div class="stat-info">
+              <div class="stat-val" data-count="84250" data-prefix="₹" data-suffix="">₹84,250</div>
+              <div class="stat-lbl">Today's Revenue</div>
+              <div class="stat-change up">↑ 12% vs yesterday</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">🧾</div>
+            <div class="stat-info">
+              <div class="stat-val" data-count="38">38</div>
+              <div class="stat-lbl">Orders Today</div>
+              <div class="stat-change up">↑ 5 new pending</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blue">📅</div>
+            <div class="stat-info">
+              <div class="stat-val" data-count="14">14</div>
+              <div class="stat-lbl">Reservations</div>
+              <div class="stat-change up">3 arriving now</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber">👥</div>
+            <div class="stat-info">
+              <div class="stat-val" data-count="5">5</div>
+              <div class="stat-lbl">Total Customers</div>
+              <div class="stat-change up">↑ 2 new today</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="reveal order-ui">
+
+          <!-- Bar Chart (Revenue) -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+              <h3 class="font-display" style="font-size:1.1rem">📊 Weekly Revenue</h3>
+              <span style="font-size:0.8rem;color:var(--text-muted)">Last 7 days</span>
+            </div>
+            <div class="bar-chart-wrap">
+              <div class="bar-chart">
+                <div class="bar-group"><div class="bar" style="height:40%"></div><span class="bar-label">Mon</span></div>
+                <div class="bar-group"><div class="bar" style="height:65%"></div><span class="bar-label">Tue</span></div>
+                <div class="bar-group"><div class="bar" style="height:50%"></div><span class="bar-label">Wed</span></div>
+                <div class="bar-group"><div class="bar" style="height:85%"></div><span class="bar-label">Thu</span></div>
+                <div class="bar-group"><div class="bar" style="height:70%"></div><span class="bar-label">Fri</span></div>
+                <div class="bar-group"><div class="bar" style="height:95%"></div><span class="bar-label">Sat</span></div>
+                <div class="bar-group"><div class="bar bar-today" style="height:60%"></div><span class="bar-label">Sun</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Donut Chart (Category Split) -->
+          <div class="card">
+            <div style="margin-bottom:16px">
+              <h3 class="font-display" style="font-size:1.1rem">🍽️ Sales by Category</h3>
+            </div>
+            <div class="donut-wrap">
+              <svg id="donut-svg" viewBox="0 0 100 100" width="110" height="110" style="flex-shrink:0">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-secondary)" stroke-width="14"/>
+                <circle class="donut-progress" cx="50" cy="50" r="40" fill="none"
+                  stroke="var(--accent)" stroke-width="14"
+                  stroke-dasharray="251.2" stroke-dashoffset="80.4"
+                  transform="rotate(-90 50 50)" stroke-linecap="round"/>
+                <circle cx="50" cy="50" r="29" fill="none" stroke="var(--info)" stroke-width="10"
+                  stroke-dasharray="182" stroke-dashoffset="80"
+                  transform="rotate(-90 50 50)" stroke-linecap="round" opacity="0.7"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="legend-row"><div class="legend-dot" style="background:var(--accent)"></div><span>Mains — 45%</span></div>
+                <div class="legend-row"><div class="legend-dot" style="background:var(--info)"></div><span>Drinks — 28%</span></div>
+                <div class="legend-row"><div class="legend-dot" style="background:var(--success)"></div><span>Desserts — 15%</span></div>
+                <div class="legend-row"><div class="legend-dot" style="background:var(--text-muted)"></div><span>Starters — 12%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders (mini) -->
+        <div class="card reveal">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+            <h3 class="font-display" style="font-size:1.1rem">🧾 Recent Orders</h3>
+            <button class="btn btn-ghost btn-sm" onclick="showSection('orders')">View All →</button>
+          </div>
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-orders-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Low Stock Alert -->
+        <div class="card reveal" style="margin-top:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+            <h3 class="font-display" style="font-size:1.1rem">⚠️ Low Stock Alerts</h3>
+            <button class="btn btn-ghost btn-sm" onclick="showSection('inventory')">Manage →</button>
+          </div>
+          <div id="low-stock-alerts"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           ORDERS
+      ══════════════════════════════════ -->
+      <div id="section-orders" class="section" data-title="Orders">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">🧾 Orders</h2>
+            <p class="section-subtitle">Manage and track all restaurant orders</p>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <select class="form-control" id="order-status-filter" style="width:160px;padding:10px 14px">
+              <option value="">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="Preparing">Preparing</option>
+              <option value="Ready">Ready</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick status stats -->
+        <div style="display:grid;flex-wrap: wrap;gap:14px;margin-bottom:24px" class="reveal order-ui">
+          <div class="card" style="padding:16px;text-align:center;border-left:3px solid var(--warning)">
+            <div style="font-size:1.8rem;font-weight:700" id="count-pending">2</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Pending</div>
+          </div>
+          <div class="card" style="padding:16px;text-align:center;border-left:3px solid var(--info)">
+            <div style="font-size:1.8rem;font-weight:700" id="count-preparing">2</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Preparing</div>
+          </div>
+          <div class="card" style="padding:16px;text-align:center;border-left:3px solid var(--accent)">
+            <div style="font-size:1.8rem;font-weight:700" id="count-ready">1</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Ready</div>
+          </div>
+          <div class="card" style="padding:16px;text-align:center;border-left:3px solid var(--success)">
+            <div style="font-size:1.8rem;font-weight:700" id="count-delivered">1</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Delivered</div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-orders-tbody-full"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           RESERVATIONS
+      ══════════════════════════════════ -->
+      <div id="section-reservations" class="section" data-title="Reservations">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">📅 Reservations</h2>
+            <p class="section-subtitle">View and manage all dining reservations</p>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('add-reservation-modal')">+ New Reservation</button>
+        </div>
+
+        <div class="card reveal">
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Res. ID</th>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Guests</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-reservations-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           MENU MANAGEMENT
+      ══════════════════════════════════ -->
+      <div id="section-menu-management" class="section" data-title="Menu Management">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">🍴 Menu Management</h2>
+            <p class="section-subtitle">Add, edit, and remove menu items</p>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('add-menu-modal')">+ Add Item</button>
+        </div>
+
+        <!-- Category filter -->
+        <div class="filter-row reveal" style="margin-bottom:20px">
+          <button class="btn btn-ghost btn-sm cat-filter-btn active" data-cat="all">All Items</button>
+          <button class="btn btn-ghost btn-sm cat-filter-btn" data-cat="starters">Starters</button>
+          <button class="btn btn-ghost btn-sm cat-filter-btn" data-cat="mains">Mains</button>
+          <button class="btn btn-ghost btn-sm cat-filter-btn" data-cat="desserts">Desserts</button>
+          <button class="btn btn-ghost btn-sm cat-filter-btn" data-cat="drinks">Drinks</button>
+        </div>
+
+        <div class="card reveal">
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-menu-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           CUSTOMERS
+      ══════════════════════════════════ -->
+      <div id="section-customers" class="section" data-title="Customers">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">👥 Customers</h2>
+            <p class="section-subtitle">View and manage customer accounts</p>
+          </div>
+          <div class="topbar-search" style="width:260px">
+            <span class="topbar-search-icon">🔍</span>
+            <input type="text" placeholder="Search customers…" id="customer-search"/>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Orders</th>
+                  <th>Total Spent</th>
+                  <th>Joined</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-customers-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           INVENTORY
+      ══════════════════════════════════ -->
+      <div id="section-inventory" class="section" data-title="Inventory">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">📦 Inventory</h2>
+            <p class="section-subtitle">Track and manage ingredient stock levels</p>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('restock-modal')">+ Restock Items</button>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="reveal order-ui">
+          <div class="card" style="padding:18px;border-left:3px solid var(--success)">
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:4px">Well Stocked</div>
+            <div style="font-size:1.6rem;font-weight:700;color:var(--success)" id="inv-good-count">0</div>
+          </div>
+          <div class="card" style="padding:18px;border-left:3px solid var(--warning)">
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:4px">Low Stock</div>
+            <div style="font-size:1.6rem;font-weight:700;color:var(--warning)" id="inv-warn-count">0</div>
+          </div>
+          <div class="card" style="padding:18px;border-left:3px solid var(--error)">
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:4px">Critical</div>
+            <div style="font-size:1.6rem;font-weight:700;color:var(--error)" id="inv-danger-count">0</div>
+          </div>
+        </div>
+
+        <div id="inventory-list"></div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           REPORTS
+      ══════════════════════════════════ -->
+      <div id="section-reports" class="section" data-title="Reports">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">📈 Reports & Analytics</h2>
+            <p class="section-subtitle">Comprehensive business performance insights</p>
+          </div>
+          <button class="btn btn-primary" onclick="go404()">Export PDF ↗</button>
+        </div>
+
+        <!-- Summary stats -->
+        <div class="stats-grid reveal">
+          <div class="stat-card">
+            <div class="stat-icon amber">💰</div>
+            <div class="stat-info">
+              <div class="stat-val">₹5.2L</div>
+              <div class="stat-lbl">Monthly Revenue</div>
+              <div class="stat-change up">↑ 18% vs last month</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">🧾</div>
+            <div class="stat-info">
+              <div class="stat-val">842</div>
+              <div class="stat-lbl">Monthly Orders</div>
+              <div class="stat-change up">↑ 7% growth</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blue">⭐</div>
+            <div class="stat-info">
+              <div class="stat-val">4.9</div>
+              <div class="stat-lbl">Avg. Rating</div>
+              <div class="stat-change up">Top 5% restaurants</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber">🔄</div>
+            <div class="stat-info">
+              <div class="stat-val">68%</div>
+              <div class="stat-lbl">Repeat Customers</div>
+              <div class="stat-change up">↑ 4% this month</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full charts -->
+        <div class="reveal order-ui">
+          <div class="card">
+            <h3 class="font-display" style="font-size:1.1rem;margin-bottom:20px">📊 Revenue — Last 7 Days</h3>
+            <div class="bar-chart-wrap">
+              <div class="bar-chart">
+                <div class="bar-group"><div class="bar" style="height:40%"></div><span class="bar-label">Mon</span></div>
+                <div class="bar-group"><div class="bar" style="height:65%"></div><span class="bar-label">Tue</span></div>
+                <div class="bar-group"><div class="bar" style="height:50%"></div><span class="bar-label">Wed</span></div>
+                <div class="bar-group"><div class="bar" style="height:85%"></div><span class="bar-label">Thu</span></div>
+                <div class="bar-group"><div class="bar" style="height:70%"></div><span class="bar-label">Fri</span></div>
+                <div class="bar-group"><div class="bar" style="height:95%"></div><span class="bar-label">Sat</span></div>
+                <div class="bar-group"><div class="bar bar-today" style="height:60%"></div><span class="bar-label">Sun</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 class="font-display" style="font-size:1.1rem;margin-bottom:16px">🍽️ Orders by Category</h3>
+            <div class="donut-wrap">
+              <svg viewBox="0 0 100 100" width="120" height="120" style="flex-shrink:0">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-secondary)" stroke-width="14"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" stroke-width="14"
+                  stroke-dasharray="251.2" stroke-dashoffset="80.4"
+                  transform="rotate(-90 50 50)" stroke-linecap="round"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="legend-row"><div class="legend-dot" style="background:var(--accent)"></div><span>Mains — 45%</span></div>
+                <div class="legend-row"><div class="legend-dot" style="background:var(--info)"></div><span>Drinks — 28%</span></div>
+                <div class="legend-row"><div class="legend-dot" style="background:var(--success)"></div><span>Desserts — 15%</span></div>
+                <div class="legend-row"><div class="legend-dot" style="background:var(--text-muted)"></div><span>Starters — 12%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top items table -->
+        <div class="card reveal" style="margin-top:20px">
+          <h3 class="font-display" style="font-size:1.1rem;margin-bottom:18px">🏆 Top Selling Items</h3>
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr><th>Rank</th><th>Item</th><th>Category</th><th>Orders</th><th>Revenue</th><th>Trend</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>🥇</td><td><strong>Truffle Risotto</strong></td><td><span class="badge badge-muted">Mains</span></td><td>184</td><td>₹38,192</td><td><span style="color:var(--success)">↑ 22%</span></td></tr>
+                <tr><td>🥈</td><td><strong>Grilled Salmon</strong></td><td><span class="badge badge-muted">Mains</span></td><td>156</td><td>₹37,284</td><td><span style="color:var(--success)">↑ 15%</span></td></tr>
+                <tr><td>🥉</td><td><strong>Espresso Martini</strong></td><td><span class="badge badge-muted">Drinks</span></td><td>132</td><td>₹14,388</td><td><span style="color:var(--success)">↑ 8%</span></td></tr>
+                <tr><td>4</td><td><strong>Beef Burger</strong></td><td><span class="badge badge-muted">Mains</span></td><td>118</td><td>₹19,282</td><td><span style="color:var(--error)">↓ 3%</span></td></tr>
+                <tr><td>5</td><td><strong>Tiramisu</strong></td><td><span class="badge badge-muted">Desserts</span></td><td>97</td><td>₹7,977</td><td><span style="color:var(--success)">↑ 11%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           PROFILE
+      ══════════════════════════════════ -->
+      <div id="section-profile" class="section" data-title="Profile">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">👤 Admin Profile</h2>
+            <p class="section-subtitle">Manage your account details</p>
+          </div>
+        </div>
+
+        <div class="card reveal" style="max-width:700px">
+          <!-- Profile Header -->
+          <div class="profile-header" style="display:flex;align-items:center;gap:24px;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border)">
+            <div class="profile-avatar-wrap" style="position:relative">
+              <div class="sidebar-avatar" style="width:80px;height:80px;font-size:2rem;border:3px solid var(--accent);box-shadow:0 0 20px var(--accent-glow)">
+                <img id="profile-img-big" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
+                <span id="profile-initial" style="font-size:2rem">A</span>
+              </div>
+              <div class="profile-avatar-edit" style="position:absolute;bottom:0;right:0;width:26px;height:26px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.75rem" title="Change photo">✏️</div>
+              <input type="file" id="profile-photo-input" accept="image/*" style="display:none"/>
+            </div>
+            <div>
+              <h3 id="profile-name" class="font-display" style="font-size:1.4rem">Admin</h3>
+              <p id="profile-email" style="color:var(--text-secondary);margin-top:4px">admin@stackly.com</p>
+              <span class="badge" style="background:var(--accent-glow);color:var(--accent);margin-top:8px">👨‍🍳 Chef / Admin</span>
+            </div>
+          </div>
+
+          <!-- Edit Form -->
+          <form id="profile-form" novalidate>
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Full Name</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">👤</span>
+                  <input type="text" class="form-control" id="edit-name" placeholder="Your full name"/>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Email Address</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">✉️</span>
+                  <input type="email" class="form-control" id="edit-email" placeholder="you@example.com"/>
+                </div>
+              </div>
+            </div>
+            <div class="form-row" style="margin-top:14px">
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Mobile Number</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">📱</span>
+                  <input type="tel" class="form-control" id="edit-mobile" placeholder="+91 9XXXXXXXXX"/>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Employee ID</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">🪪</span>
+                  <input type="text" class="form-control" id="edit-empid" placeholder="EMP-XXXX"/>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top:18px">Save Profile ✓</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           SETTINGS
+      ══════════════════════════════════ -->
+      <div id="section-settings" class="section" data-title="Settings">
+        <div class="section-header reveal">
+          <div>
+            <h2 class="section-title font-display">Settings ⚙️</h2>
+            <p class="section-subtitle">Customize your Stackly admin experience</p>
+          </div>
+        </div>
+        <div class="settings-grid reveal">
+          <!-- Appearance -->
+          <div class="card settings-card">
+            <h3>🎨 Appearance</h3>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Light Theme</div>
+                <div class="settings-row-sub">Toggle between dark and light mode</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" data-theme-toggle/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="settings-row" style="margin-top:14px">
+              <div>
+                <div class="settings-row-label">Compact Sidebar</div>
+                <div class="settings-row-sub">Reduce sidebar to icon-only view</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="compact-sidebar-toggle"/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="card settings-card">
+            <h3>🔔 Notifications</h3>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">New Orders</div>
+                <div class="settings-row-sub">Alert on every incoming order</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Low Stock Alerts</div>
+                <div class="settings-row-sub">Notify when stock falls below minimum</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Reservation Updates</div>
+                <div class="settings-row-sub">New and modified reservations</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <button class="btn btn-primary btn-sm" style="margin-top:14px" id="save-notifications-btn">Save Preferences</button>
+          </div>
+
+          <!-- Change Password -->
+          <div class="card settings-card" style="grid-column:1/-1">
+            <h3>🔑 Change Password</h3>
+            <form id="change-password-form" style="max-width:480px">
+              <div class="form-group">
+                <label class="form-label">Current Password</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">🔒</span>
+                  <input type="password" class="form-control" id="current-password" placeholder="Enter current password"/>
+                  <span class="input-toggle">👁️</span>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">New Password</label>
+                  <div class="input-wrapper">
+                    <span class="input-icon">🔐</span>
+                    <input type="password" class="form-control" id="new-password" placeholder="Min. 6 characters"/>
+                    <span class="input-toggle">👁️</span>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Confirm New Password</label>
+                  <div class="input-wrapper">
+                    <span class="input-icon">🔐</span>
+                    <input type="password" class="form-control" id="confirm-new-password" placeholder="Re-enter new password"/>
+                    <span class="input-toggle">👁️</span>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary" style="margin-top:16px">Update Password 🔑</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-inner -->
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>Stack<span>ly</span></h3>
+          <p>Premium restaurant management system built for modern dining experiences. Fresh flavors, fast service, memorable dining.</p>
+          <div class="social-links">
+            <div class="social-link" onclick="go404()" title="Instagram">📸</div>
+            <div class="social-link" onclick="go404()" title="Facebook">👥</div>
+            <div class="social-link" onclick="go404()" title="X / Twitter">🐦</div>
+            <div class="social-link" onclick="go404()" title="LinkedIn">💼</div>
+            <div class="social-link" onclick="go404()" title="YouTube">▶️</div>
+            <div class="social-link" onclick="go404()" title="WhatsApp">💬</div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Admin</h4>
+          <a onclick="showSection('dashboard')">Dashboard</a>
+          <a onclick="showSection('reports')">Reports</a>
+          <a onclick="showSection('inventory')">Inventory</a>
+          <a onclick="showSection('menu-management')">Menu</a>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <a onclick="go404()">Help Centre</a>
+          <a onclick="go404()">Contact Us</a>
+          <a onclick="go404()">Status</a>
+          <a onclick="go404()">Feedback</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a onclick="go404()">Privacy Policy</a>
+          <a onclick="go404()">Terms of Service</a>
+          <a onclick="go404()">Cookie Policy</a>
+          <a onclick="go404()">Disclaimer</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Stackly Restaurant. All rights reserved.</p>
+        <p>Made with ❤️ for food lovers</p>
+      </div>
+    </footer>
+
+  </main><!-- /main-content -->
+</div><!-- /dashboard-page -->
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Add Menu Item Modal -->
+<div class="modal-overlay" id="add-menu-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="font-display">🍽️ Add Menu Item</h3>
+      <span class="modal-close" onclick="closeModal('add-menu-modal')">✕</span>
+    </div>
+    <form id="add-menu-form" novalidate>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Item Name *</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🍴</span>
+            <input type="text" class="form-control" id="new-item-name" placeholder="e.g. Butter Chicken"/>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Category *</label>
+          <select class="form-control" id="new-item-cat" style="padding:14px 16px 14px 44px">
+            <option value="">Select category</option>
+            <option value="starters">Starters</option>
+            <option value="mains">Mains</option>
+            <option value="desserts">Desserts</option>
+            <option value="drinks">Drinks</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:14px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Price (₹) *</label>
+          <div class="input-wrapper">
+            <span class="input-icon">💰</span>
+            <input type="number" class="form-control" id="new-item-price" placeholder="e.g. 450" min="1"/>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Emoji Icon</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🎨</span>
+            <input type="text" class="form-control" id="new-item-emoji" placeholder="🍛" maxlength="4"/>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px">
+        <label class="form-label">Description</label>
+        <div class="input-wrapper">
+          <span class="input-icon">📝</span>
+          <input type="text" class="form-control" id="new-item-desc" placeholder="Short description of the dish…"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:20px">
+        <button type="submit" class="btn btn-primary" style="flex:1">Add Item ✓</button>
+        <button type="button" class="btn btn-ghost" onclick="closeModal('add-menu-modal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Reservation Modal -->
+<div class="modal-overlay" id="add-reservation-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="font-display">📅 New Reservation</h3>
+      <span class="modal-close" onclick="closeModal('add-reservation-modal')">✕</span>
+    </div>
+    <form id="add-reservation-form" novalidate>
+      <div class="form-group">
+        <label class="form-label">Customer Name *</label>
+        <div class="input-wrapper">
+          <span class="input-icon">👤</span>
+          <input type="text" class="form-control" id="res-customer" placeholder="Full name"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Date *</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📅</span>
+            <input type="date" class="form-control" id="res-date"/>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Time *</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🕐</span>
+            <input type="time" class="form-control" id="res-time"/>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px">
+        <label class="form-label">Number of Guests *</label>
+        <div class="input-wrapper">
+          <span class="input-icon">👥</span>
+          <input type="number" class="form-control" id="res-guests" placeholder="2" min="1" max="20"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:20px">
+        <button type="submit" class="btn btn-primary" style="flex:1">Create Reservation ✓</button>
+        <button type="button" class="btn btn-ghost" onclick="closeModal('add-reservation-modal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Restock Modal -->
+<div class="modal-overlay" id="restock-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="font-display">📦 Restock Items</h3>
+      <span class="modal-close" onclick="closeModal('restock-modal')">✕</span>
+    </div>
+    <p style="color:var(--text-secondary);margin-bottom:20px;font-size:0.9rem">Select an item and enter the quantity to add to stock.</p>
+    <div class="form-group">
+      <label class="form-label">Item</label>
+      <select class="form-control" id="restock-item" style="padding:14px 16px">
+        <option value="">Select item…</option>
+        <option value="Chicken Breast">Chicken Breast</option>
+        <option value="Truffle Oil">Truffle Oil</option>
+        <option value="Arborio Rice">Arborio Rice</option>
+        <option value="Atlantic Salmon">Atlantic Salmon</option>
+        <option value="Parmesan Cheese">Parmesan Cheese</option>
+        <option value="Fresh Basil">Fresh Basil</option>
+        <option value="Mozzarella">Mozzarella</option>
+        <option value="Espresso Beans">Espresso Beans</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-top:14px">
+      <label class="form-label">Quantity to Add</label>
+      <div class="input-wrapper">
+        <span class="input-icon">🔢</span>
+        <input type="number" class="form-control" id="restock-qty" placeholder="e.g. 20" min="1"/>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:20px">
+      <button class="btn btn-primary" style="flex:1" onclick="doRestock()">Restock ✓</button>
+      <button class="btn btn-ghost" onclick="closeModal('restock-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="script.js"></script>
+<script>
+/* ── Admin-dashboard extra init ── */
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(initPasswordToggles, 500);
+
+  // Compact sidebar toggle
+  const compactToggle = document.getElementById('compact-sidebar-toggle');
+  if (compactToggle) {
+    compactToggle.addEventListener('change', () => {
+      document.querySelector('.sidebar')?.classList.toggle('compact', compactToggle.checked);
+      showToast(compactToggle.checked ? 'Compact sidebar enabled.' : 'Sidebar expanded.', 'info', 1500);
+    });
+  }
+
+  // Add reservation form
+  const resForm = document.getElementById('add-reservation-form');
+  if (resForm) {
+    resForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const customer = document.getElementById('res-customer').value.trim();
+      const date     = document.getElementById('res-date').value;
+      const time     = document.getElementById('res-time').value;
+      const guests   = document.getElementById('res-guests').value;
+      if (!customer || !date || !time || !guests) { showToast('Please fill all fields.', 'warning'); return; }
+      const newRes = {
+        id: '#RES-' + (20 + Math.floor(Math.random() * 80)),
+        customer, date, time: time,
+        guests: parseInt(guests),
+        status: 'Confirmed'
+      };
+      ADMIN_RESERVATIONS.unshift(newRes);
+      renderAdminReservationsTable(ADMIN_RESERVATIONS);
+      resForm.reset();
+      closeModal('add-reservation-modal');
+      showToast(`Reservation for ${customer} created!`, 'success');
+    });
+  }
+
+  // Duplicate orders tbody for the full orders section
+  function syncOrdersTable() {
+    const src = document.getElementById('admin-orders-tbody');
+    const dst = document.getElementById('admin-orders-tbody-full');
+    if (src && dst) dst.innerHTML = src.innerHTML;
+  }
+
+  // Override renderAdminOrdersTable to also fill the full table
+  const origRender = window.renderAdminOrdersTable;
+  if (origRender) {
+    window.renderAdminOrdersTable = function(data) {
+      origRender(data);
+      syncOrdersTable();
+      updateOrderStatusCounts();
+    };
+  }
+
+  // Populate low-stock alerts on dashboard
+  setTimeout(() => {
+    const INVENTORY_DATA_LOCAL = [
+      { name:'Chicken Breast',  qty:45, unit:'kg',  min:10, max:60  },
+      { name:'Truffle Oil',     qty:3,  unit:'liters', min:5, max:20 },
+      { name:'Arborio Rice',    qty:28, unit:'kg',  min:10, max:40  },
+      { name:'Atlantic Salmon', qty:12, unit:'kg',  min:8,  max:30  },
+      { name:'Parmesan Cheese', qty:8,  unit:'kg',  min:5,  max:20  },
+      { name:'Fresh Basil',     qty:2,  unit:'kg',  min:3,  max:10  },
+      { name:'Mozzarella',      qty:22, unit:'kg',  min:8,  max:30  },
+      { name:'Espresso Beans',  qty:15, unit:'kg',  min:10, max:25  },
+    ];
+    const lowItems = INVENTORY_DATA_LOCAL.filter(i => i.qty < i.min);
+    const alertsEl = document.getElementById('low-stock-alerts');
+    if (alertsEl) {
+      if (!lowItems.length) {
+        alertsEl.innerHTML = '<p style="color:var(--success)">✅ All stock levels are healthy.</p>';
+      } else {
+        alertsEl.innerHTML = lowItems.map(i => `
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(224,92,92,0.08);border:1px solid rgba(224,92,92,0.25);border-radius:var(--radius-md);margin-bottom:8px">
+            <span style="font-size:1.2rem">⚠️</span>
+            <div style="flex:1">
+              <strong>${i.name}</strong>
+              <span style="color:var(--text-muted);margin-left:8px;font-size:0.82rem">${i.qty} ${i.unit} remaining (min: ${i.min} ${i.unit})</span>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="openModal('restock-modal')">Restock</button>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Inventory summary counts
+    let good = 0, warn = 0, danger = 0;
+    INVENTORY_DATA_LOCAL.forEach(i => {
+      const pct = (i.qty / i.max) * 100;
+      if (pct < 30) danger++;
+      else if (pct < 60) warn++;
+      else good++;
+    });
+    const gc = document.getElementById('inv-good-count');
+    const wc = document.getElementById('inv-warn-count');
+    const dc = document.getElementById('inv-danger-count');
+    if (gc) gc.textContent = good;
+    if (wc) wc.textContent = warn;
+    if (dc) dc.textContent = danger;
+  }, 2200);
+});
+
+function updateOrderStatusCounts() {
+  const counts = { Pending:0, Preparing:0, Ready:0, Delivered:0 };
+  ADMIN_ORDERS.forEach(o => { if (counts[o.status] !== undefined) counts[o.status]++; });
+  const p = document.getElementById('count-pending');
+  const pr = document.getElementById('count-preparing');
+  const r = document.getElementById('count-ready');
+  const d = document.getElementById('count-delivered');
+  if (p) p.textContent  = counts.Pending;
+  if (pr) pr.textContent = counts.Preparing;
+  if (r) r.textContent  = counts.Ready;
+  if (d) d.textContent  = counts.Delivered;
+}
+
+function doRestock() {
+  const item = document.getElementById('restock-item')?.value;
+  const qty  = parseInt(document.getElementById('restock-qty')?.value);
+  if (!item)      { showToast('Please select an item.', 'warning'); return; }
+  if (!qty || qty < 1) { showToast('Enter a valid quantity.', 'warning'); return; }
+  closeModal('restock-modal');
+  showToast(`${item} restocked by ${qty} units!`, 'success');
+  document.getElementById('restock-item').value = '';
+  document.getElementById('restock-qty').value  = '';
+}
+window.doRestock = doRestock;
+</script>
+</body>
+</html>

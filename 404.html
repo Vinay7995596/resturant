@@ -1,0 +1,328 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>404 — Page Not Found | Stackly</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>"/>
+  <style>
+    /* ── 404-specific extras ── */
+    .four-wrap {
+      position: relative; z-index: 1;
+      margin-bottom: 20px;
+    }
+    .four-wrap .big-number {
+      position: relative; display: inline-block;
+    }
+    .four-wrap .big-number::after {
+      content: '🍽️';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(3rem, 8vw, 6rem);
+      filter: none;
+      -webkit-text-fill-color: initial;
+      background: none;
+      -webkit-background-clip: initial;
+      animation: spinPlate 8s linear infinite;
+    }
+    @keyframes spinPlate {
+      0%   { transform: translate(-50%,-50%) rotate(0deg) scale(1); }
+      50%  { transform: translate(-50%,-50%) rotate(180deg) scale(1.1); }
+      100% { transform: translate(-50%,-50%) rotate(360deg) scale(1); }
+    }
+
+    .floating-crumbs {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .crumb {
+      position: absolute;
+      font-size: 2rem;
+      animation: floatCrumb linear infinite;
+      opacity: 0;
+    }
+    @keyframes floatCrumb {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.4; }
+      100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+    }
+
+    .glow-orb {
+      position: fixed; border-radius: 50%; pointer-events: none;
+      filter: blur(80px); z-index: 0;
+    }
+    .orb-1 {
+      width: 400px; height: 400px; top: -100px; left: -100px;
+      background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 70%);
+      animation: orbFloat1 12s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 300px; height: 300px; bottom: -80px; right: -80px;
+      background: radial-gradient(circle, rgba(92,184,224,0.1) 0%, transparent 70%);
+      animation: orbFloat2 15s ease-in-out infinite;
+    }
+    @keyframes orbFloat1 {
+      0%, 100% { transform: translate(0,0); }
+      50%       { transform: translate(60px, 40px); }
+    }
+    @keyframes orbFloat2 {
+      0%, 100% { transform: translate(0,0); }
+      50%       { transform: translate(-40px, -60px); }
+    }
+
+    .glow-rings-404 {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .glow-rings-404 .ring {
+      position: absolute; border-radius: 50%;
+      border: 1px solid rgba(245,166,35,0.1);
+    }
+    .ring-1 { width: 200px; height: 200px; animation: expandRing 4s ease-out infinite; }
+    .ring-2 { width: 200px; height: 200px; animation: expandRing 4s ease-out 1.3s infinite; }
+    .ring-3 { width: 200px; height: 200px; animation: expandRing 4s ease-out 2.6s infinite; }
+
+    .btn-row {
+      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 24px;
+    }
+
+    .breadcrumb-404 {
+      font-size: 0.78rem; color: var(--text-muted);
+      margin-bottom: 12px; letter-spacing: 0.05em;
+    }
+    .breadcrumb-404 a { color: var(--accent); cursor: pointer; }
+
+    .search-404 {
+      display: flex; gap: 10px; margin-top: 20px; justify-content: center;
+    }
+    .search-404 .form-control {
+      flex: 1; max-width: 260px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      color: var(--text-primary);
+      font-family: inherit; font-size: 0.9rem;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .search-404 .form-control:focus { border-color: var(--accent); }
+
+    .suggestion-links {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 20px;
+    }
+    .suggestion-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 6px 16px;
+      font-size: 0.82rem; color: var(--text-secondary);
+      cursor: pointer; transition: all var(--transition);
+    }
+    .suggestion-chip:hover {
+      border-color: var(--accent); color: var(--accent); background: var(--accent-glow);
+      transform: translateY(-2px);
+    }
+
+    .error-code-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(224,92,92,0.1); border: 1px solid rgba(224,92,92,0.25);
+      border-radius: 99px; padding: 4px 14px;
+      font-size: 0.78rem; color: var(--error); margin-bottom: 16px;
+      letter-spacing: 0.05em; font-weight: 600;
+    }
+  </style>
+  </head>
+  <body class="animated-bg">
+
+  <!-- Background elements -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Floating food crumbs -->
+  <div class="floating-crumbs" id="crumbs-container"></div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loader-logo">Stack<span>ly</span></div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  </div>
+
+  <!-- 404 Page -->
+  <div class="page-404">
+    <div class="page-404-bg"></div>
+
+    <!-- Glow rings centered behind number -->
+    <div class="glow-rings-404">
+      <div class="ring ring-1"></div>
+      <div class="ring ring-2"></div>
+      <div class="ring ring-3"></div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-404" style="position:relative;z-index:2">
+      <a onclick="goBack()">← Go back</a>
+      &nbsp;·&nbsp;
+      <a onclick="goTo('index.html')">Stackly Home</a>
+    </div>
+
+    <!-- Big 404 number -->
+    <div class="four-wrap" style="position:relative;z-index:2">
+      <div class="big-number">404</div>
+    </div>
+
+    <!-- Glass card -->
+    <div class="glass-card" style="position:relative;z-index:2">
+      <div class="error-code-badge">
+        <span>⚠️</span> HTTP ERROR 404
+      </div>
+
+      <div class="food-icons">
+        <span>🍕</span>
+        <span>🥗</span>
+        <span>🍸</span>
+        <span>🍰</span>
+      </div>
+
+      <h2 class="font-display">Page Not Found</h2>
+      <p>
+        Looks like this dish isn't on our menu! The page you're looking for
+        may have been moved, renamed, or is temporarily unavailable.
+        Let's get you back to something delicious.
+      </p>
+
+      <!-- Search bar -->
+      <div class="search-404">
+        <input
+          type="text"
+          class="form-control"
+          id="search-404-input"
+          placeholder="Search Stackly…"
+          onkeydown="if(event.key==='Enter') handle404Search()"
+        />
+        <button class="btn btn-primary" onclick="handle404Search()">Search</button>
+      </div>
+
+      <!-- Quick suggestion chips -->
+      <div class="suggestion-links">
+        <div class="suggestion-chip" onclick="goToWithAuth('customer-dashboard.html','home')">🏠 Home</div>
+        <div class="suggestion-chip" onclick="goToWithAuth('customer-dashboard.html','menu')">🍴 Menu</div>
+        <div class="suggestion-chip" onclick="goToWithAuth('customer-dashboard.html','reservations')">📅 Reservations</div>
+        <div class="suggestion-chip" onclick="goToWithAuth('customer-dashboard.html','orders')">📦 Orders</div>
+        <div class="suggestion-chip" onclick="goToWithAuth('admin-dashboard.html','dashboard')">👨‍🍳 Admin</div>
+      </div>
+
+      <!-- CTA buttons -->
+      <div class="btn-row">
+        <button class="btn btn-primary btn-lg" onclick="goBack()">← Go Back</button>
+        <button class="btn btn-ghost btn-lg" onclick="goTo('index.html')">🏠 Login Page</button>
+      </div>
+    </div>
+
+    <!-- Footer note -->
+    <p style="margin-top:28px;font-size:0.8rem;color:var(--text-muted);position:relative;z-index:2">
+      Still lost? <a onclick="showContactToast()" style="color:var(--accent);cursor:pointer">Contact our support team</a>
+    </p>
+
+    <!-- Brand watermark -->
+    <div style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:2;opacity:0.5;font-family:'Playfair Display',serif;font-size:1rem;color:var(--accent)">
+      Stack<span style="color:var(--text-primary)">ly</span>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="script.js"></script>
+  <script>
+  /* ── 404 specific scripts ── */
+
+  // Spawn floating food crumbs
+  (function spawnCrumbs() {
+    const foods = ['🍕','🥗','🍸','🍰','☕','🥩','🍚','🐟','🍔','🍫','🍨','🥤','🍞','🍲','🥐'];
+    const container = document.getElementById('crumbs-container');
+    if (!container) return;
+    foods.forEach((food, i) => {
+      const el = document.createElement('div');
+      el.className = 'crumb';
+      el.textContent = food;
+      el.style.left = (5 + Math.random() * 90) + '%';
+      el.style.animationDuration = (8 + Math.random() * 12) + 's';
+      el.style.animationDelay = (Math.random() * 10) + 's';
+      el.style.fontSize = (1.2 + Math.random() * 1.6) + 'rem';
+      container.appendChild(el);
+    });
+  })();
+
+  // function goBack() {
+  //   if (window.history.length > 1) {
+  //     window.history.back();
+  //   } else {
+  //     goTo('index.html');
+  //   }
+  // }
+
+  function goBack() {
+  if (document.referrer) {
+    window.location.href = document.referrer;
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+  function handle404Search() {
+    const q = document.getElementById('search-404-input')?.value.trim().toLowerCase();
+    if (!q) { showToast('Type something to search!', 'warning', 2000); return; }
+
+    // Route common searches
+    if (q.includes('menu') || q.includes('food') || q.includes('dish')) {
+      goToWithAuth('customer-dashboard.html', 'menu'); return;
+    }
+    if (q.includes('cart')) {
+      goToWithAuth('customer-dashboard.html', 'cart'); return;
+    }
+    if (q.includes('order')) {
+      goToWithAuth('customer-dashboard.html', 'orders'); return;
+    }
+    if (q.includes('reservation') || q.includes('book') || q.includes('table')) {
+      goToWithAuth('customer-dashboard.html', 'reservations'); return;
+    }
+    if (q.includes('profile') || q.includes('account')) {
+      goToWithAuth('customer-dashboard.html', 'profile'); return;
+    }
+    if (q.includes('setting')) {
+      goToWithAuth('customer-dashboard.html', 'settings'); return;
+    }
+    if (q.includes('admin') || q.includes('chef') || q.includes('dashboard')) {
+      goToWithAuth('admin-dashboard.html', 'dashboard'); return;
+    }
+    if (q.includes('login') || q.includes('sign in')) {
+      goTo('index.html'); return;
+    }
+    if (q.includes('signup') || q.includes('register') || q.includes('create')) {
+      goTo('signup.html'); return;
+    }
+
+    showToast(`No results found for "${q}". Try Menu, Orders, or Reservations.`, 'info', 3000);
+  }
+
+  function goToWithAuth(page, section) {
+    const user = JSON.parse(localStorage.getItem('stackly-user') || 'null');
+    if (!user) { goTo('index.html'); return; }
+    // Store target section to load after navigation
+    sessionStorage.setItem('stackly-goto-section', section);
+    goTo(page);
+  }
+
+  function showContactToast() {
+    showToast('Support: support@stackly.com | +91 98765 43210', 'info', 5000);
+  }
+  window.showContactToast = showContactToast;
+  window.handle404Search  = handle404Search;
+  window.goBack           = goBack;
+  window.goToWithAuth     = goToWithAuth;
+  </script>
+  </body>
+  </html>
